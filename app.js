@@ -6,10 +6,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 var mongoose = require('mongoose');
+var passport = require('passport');
+var session = require('express-session');
 
+
+require('./passport');
 var config = require('./config');
 var index = require('./routes/index');
-var users = require('./routes/users');
+var auth = require('./routes/auth');
 
 mongoose.connect(config.dbMongoConnection);
 global.User = require('./models/users');
@@ -26,12 +30,25 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({
+  secret : config.sessionKey,
+  resave : false,
+  saveUninitialized : true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(expressValidator());
 
-app.use('/', index);
-app.use('/users', users);
+app.use(function(req, res, next) {
+  if(req.isAuthenticated()) {
+    res.locals.user = req.user;
+  }
+  next();
+});
 
+app.use('/', index);
+app.use('/', auth);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
