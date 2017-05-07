@@ -14,9 +14,11 @@ require('./passport');
 var config = require('./config');
 var index = require('./routes/index');
 var auth = require('./routes/auth');
+var task = require('./routes/task');
 
 mongoose.connect(config.dbMongoConnection);
 global.User = require('./models/users');
+global.Task = require('./models/task');
 
 var app = express();
 
@@ -49,6 +51,7 @@ app.use(function(req, res, next) {
 
 app.use('/', index);
 app.use('/', auth);
+app.use('/', task);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

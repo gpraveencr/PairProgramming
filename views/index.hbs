@@ -1,3 +1,7 @@
-<div class="col-md-9 col-md-offset-2"> 
+<div class="col-md-9 col-md-offset-2">
   <h1>{{title}}</h1>
 </div>
+
+{{#if user}}
+  <a href="/createTask" class="btn btn-primary">Create Task</a>
+{{/if}}
